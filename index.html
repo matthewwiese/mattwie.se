@@ -1,0 +1,132 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Matt Wiese</title>
+    <meta name="description" content="Matt Wiese is a programmer.">
+    <link rel="icon" href="/favicon.gif" type="image/gif">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            height: 100vh;
+        }
+        div#a {
+            border: 1px solid black;
+            padding: 0.5rem;
+            margin-left: 0.75rem;
+            margin-right: 0.75rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            max-width: 16rem;
+            box-shadow: 0.3rem 0.3rem #8bb8d9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        div#a > h1 {
+            display: inline;
+            font-family: monospace;
+            font-size: 1.75rem;
+            text-align: center;
+            border-bottom: 2px solid;
+        }
+        div#a > img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+        div#b > h2 {
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: monospace;
+            text-align: center;
+        }
+        div#b > table { border-spacing: 2rem; }
+        div#b td {
+            font-size: 4rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        canvas#c {
+            position: absolute;
+            pointer-events: none;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body onload="animate()">
+    <canvas id="c"></canvas>
+    <div id="a">
+        <img src="/image.jpg"></img>
+        <h1>Matt Wiese</h1>
+    </div>
+    <div id="b">
+        <h2>Click on a funny face:</h2>
+        <table>
+            <tr>
+                <td>😂</td>
+                <td>🤪</td>
+                <td>😘</td>
+            </tr>
+        </table>
+    </div>
+    <script>
+        let a = [];
+
+        const c = document.getElementById(`c`);
+        const cx = c.getContext(`2d`);
+        resizeCanvas();
+        cx.font = `4rem serif`;
+        window.addEventListener(`resize`, () => resizeCanvas, false);
+
+        // TODO: Simple WebSocket server to receive and broadcast to all clients
+        //       i.e. when other people click, their emojis appear at the bottom
+        //       of your page
+        const ws = new WebSocket(`wss://ws.postman-echo.com/raw`);
+        ws.onmessage = (e) => recv(e);
+
+        function vy() { return window.scrollY + window.innerHeight; }
+        function rx() { return Math.floor(Math.random() * (window.innerWidth - rem2px(4))); }
+        function clear() { cx.clearRect(0, 0, c.width, c.height); }
+        function rem2px(r) { return r * parseFloat(getComputedStyle(document.documentElement).fontSize); }
+        function funnyFace(e) { ws.send(e.target.innerText); }
+        function resizeCanvas() {
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+        }
+        function recv(e) {
+            const xp = rx();
+            const yp = vy();
+            const emoji = { v: e.data, x: xp, y: yp, a: 1.0 };
+            a.push(emoji);
+        }
+        function init(e) {
+            const tds = document.getElementsByTagName(`td`);
+            for (const td of tds) td.onclick = (e) => funnyFace(e);
+        }
+        function animate() {
+            clear();
+            let new_a = [];
+            a.map(emj => {
+                if (emj.a >= 0.01) {
+                    emj.y -= 2;
+                    emj.a -= 0.01;
+                    cx.globalAlpha = emj.a;
+                    cx.fillText(emj.v, emj.x, emj.y);
+                    cx.globalAlpha = 1;
+                    new_a.push(emj);
+                }
+            });
+            a = new_a;
+            requestAnimationFrame(animate)
+        }
+        document.addEventListener(`DOMContentLoaded`, init);
+    </script>
+</body>
+</html>
+
