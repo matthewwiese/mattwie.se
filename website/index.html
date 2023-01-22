@@ -84,10 +84,8 @@
         cx.font = `4rem serif`;
         window.addEventListener(`resize`, () => resizeCanvas, false);
 
-        // TODO: Simple WebSocket server to receive and broadcast to all clients
-        //       i.e. when other people click, their emojis appear at the bottom
-        //       of your page
-        const ws = new WebSocket(`wss://ws.postman-echo.com/raw`);
+        const ws = new WebSocket(`wss://clickonafunnyface.mattwie.se:8765`);
+        ws.onopen = (e) => console.log(e);
         ws.onmessage = (e) => recv(e);
 
         function vy() { return window.scrollY + window.innerHeight; }

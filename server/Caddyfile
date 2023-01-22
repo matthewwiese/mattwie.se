@@ -1,0 +1,7 @@
+clickonafunnyface.mattwie.se {
+	@websockets {
+		header Connection *Upgrade*
+		header Upgrade websocket
+	}
+	reverse_proxy @websockets clickonafunnyface:8765
+}
