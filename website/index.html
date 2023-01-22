@@ -84,7 +84,7 @@
         cx.font = `4rem serif`;
         window.addEventListener(`resize`, () => resizeCanvas, false);
 
-        const ws = new WebSocket(`wss://clickonafunnyface.mattwie.se:8765`);
+        const ws = new WebSocket(`wss://code.mattwie.se/clickonafunnyface`);
         ws.onopen = (e) => console.log(e);
         ws.onmessage = (e) => recv(e);
 

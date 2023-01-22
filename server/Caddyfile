@@ -1,7 +1,9 @@
-clickonafunnyface.mattwie.se {
-	@websockets {
-		header Connection *Upgrade*
-		header Upgrade websocket
-	}
-	reverse_proxy @websockets clickonafunnyface:8765
+code.mattwie.se {
+    @paths path /clickonafunnyface
+    handle @paths {
+        reverse_proxy clickonafunnyface:8765
+    }
+    handle {
+        redir https://mattwie.se
+    }
 }

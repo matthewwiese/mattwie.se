@@ -55,12 +55,11 @@ async def receiver(websocket, path):
 
 async def main():
     async with websockets.serve(receiver, host = "0.0.0.0", port = 8765, origins = ["https://mattwie.se"]):
-        print("Run forever")
+        print("WebSocket server running")
         await asyncio.Future()
 
 T1 = threading.Thread(target=monitor_queue_callback)
 T1.start()
-
 print("Queue monitor thread started")
 
 def handler(signum, frame):
