@@ -6,6 +6,7 @@ import asyncio
 import threading
 import websockets
 
+ALLOWED = set(['😂', '🤪', '😘'])
 CLIENTS = set()
 QUEUE = queue.Queue(maxsize=1000) # Don't bother with more
 
@@ -42,9 +43,9 @@ async def receiver(websocket, path):
     while True:
         if not IS_EXITING:
             try:
-
                 message = await websocket.recv()
-                QUEUE.put(message)
+                if message in ALLOWED:
+                    QUEUE.put(message)
             except websockets.ConnectionClosed:
                 try:
                     CLIENTS.remove(websocket)
