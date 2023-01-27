@@ -65,7 +65,6 @@ print("Queue monitor thread started")
 
 def handler(signum, frame):
     global T1
-    global T2
     global LOCK
     global LOOP
     global IS_EXITING
